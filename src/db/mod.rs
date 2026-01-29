@@ -8,6 +8,11 @@ mod status;
 mod occupation;
 mod planning;
 mod categorie_client;
+mod employee;
+mod type_mission;
+mod competence;
+mod intervenant;
+mod sous_traitant;
 
 pub fn get_connection() -> rusqlite::Result<Connection> {
     let conn = Connection::open("gestabox.db")?;
