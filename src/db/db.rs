@@ -1,7 +1,7 @@
 use rusqlite::Connection;
 
 pub fn create_bdd() -> rusqlite::Result<()> {
-    let conn = Connection::open("missions.db")?;
+    let conn = Connection::open("gestabox.db")?;
 
     conn.execute(
         "CREATE TABLE IF NOT EXISTS mission (
@@ -12,10 +12,10 @@ pub fn create_bdd() -> rusqlite::Result<()> {
         [],
     )?;
 
-    conn.execute(
-        "INSERT INTO mission (title, done) VALUES (?1, ?2)",
-        ("Première mission", 0),
-    )?;
-
     Ok(())
+}
+
+pub fn get_connection() -> rusqlite::Result<Connection> {
+    let conn = Connection::open("gestabox.db")?;
+    Ok(conn)
 }
