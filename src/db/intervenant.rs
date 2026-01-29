@@ -64,12 +64,12 @@ pub fn create(
 }
 
 // 4. Lecture
-pub fn get_by_id(conn: &Connection, id: i32) -> Result<Intervenant> {
+pub fn get_by_id(conn: &Connection, id_intervant: i32) -> Result<Intervenant> {
     conn.query_row(
         "SELECT id_intervant, nom_intervenant, prenom_intervenant,
          horaires, ville , code_postal, telephone_intervant, id_planning, id_employee, id_sous_traitant
          FROM Intervenant WHERE id_intervant = ?1",
-        params![id],
+        params![id_intervant],
         |row| {
             Ok(Intervenant {
                 id_intervant: row.get(0)?,

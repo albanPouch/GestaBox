@@ -45,11 +45,11 @@ pub fn create(
 }
 
 // 4. Lecture
-pub fn get_by_id(conn: &Connection, id: i32) -> Result<Client> {
+pub fn get_by_id(conn: &Connection, id_client: i32) -> Result<Client> {
     conn.query_row(
         "SELECT id_client, nom_client, prenom_client, raison_social, telephone_client
          FROM Client WHERE id_client = ?1",
-        params![id],
+        params![id_client],
         |row| {
             Ok(Client {
                 id_client: row.get(0)?,

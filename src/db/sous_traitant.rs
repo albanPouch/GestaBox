@@ -40,11 +40,11 @@ pub fn create(
 }
 
 // 4. Lecture
-pub fn get_by_id(conn: &Connection, id: i32) -> Result<Sous_traitant> {
+pub fn get_by_id(conn: &Connection, id_sous_traitant: i32) -> Result<Sous_traitant> {
     conn.query_row(
         "SELECT id_sous_traitant, nom_entreprise, taux_horaire
          FROM Sous_traitant WHERE id_sous_traitant = ?1",
-        params![id],
+        params![id_sous_traitant],
         |row| {
             Ok(Sous_traitant {
                 id_sous_traitant: row.get(0)?,
