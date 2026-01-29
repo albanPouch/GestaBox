@@ -1,0 +1,69 @@
+use rusqlite::{params, Connection, Result};
+use crate::db::get_connection;
+
+// La Structure (Données)
+#[derive(Debug)]
+pub struct Client {
+    pub id_client: i32,
+    pub nom_client: String,
+    pub prenom_client: String,
+    pub raison_social: String,
+    pub telephone_client: String,
+}
+
+// Création de la table
+pub fn init_table(conn: &Connection) -> Result<()> {
+    conn.execute(
+        "CREATE TABLE IF NOT EXISTS Client(
+            id_client INT,
+            nom_client VARCHAR(50),
+            prenom_client VARCHAR(50),
+            raison_social VARCHAR(50),
+            telephone_client CHAR(10),
+            PRIMARY KEY(id_client)
+        )",
+        [],
+    )?;
+    Ok(())
+}
+
+pub fn create(
+    conn: &Connection,
+    id: i32,
+    nom_client: &str,
+    prenom_client: &str,
+    raison_social: Option<&str>,
+    telephone_client: &str,
+) -> Result<()> {
+    conn.execute(
+        "INSERT INTO Client (
+            id_client, nom_client, prenom_client, raison_social, telephone_client
+        ) VALUES (?1, ?2, ?3, ?4, ?5)",
+        params![id, nom_client, prenom_client, raison_social, telephone_client],
+    )?;
+    Ok(())
+}
+
+// 4. Lecture
+pub fn get_by_id(conn: &Connection, id: i32) -> Result<Client> {
+    conn.query_row(
+        "SELECT id_client, nom_client, prenom_client, raison_social, telephone_client
+         FROM Client WHERE id_client = ?1",
+        params![id],
+        |row| {
+            Ok(Client {
+                id_client: row.get(0)?,
+                nom_client: row.get(1)?,
+                prenom_client: row.get(2)?,
+                raison_social: row.get(3)?,
+                telephone_client: row.get(4)?,
+            })
+        },
+    )
+}
+
+// 5. On initialise la table et ajoute des données par défaut
+pub fn init_db(conn: &Connection) -> Result<()> {
+    init_table(&conn)?;
+    Ok(())
+}

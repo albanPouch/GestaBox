@@ -23,9 +23,3 @@ pub fn create_bdd() -> rusqlite::Result<()> {
         }
     }
 }
-
-
-pub fn get_connection() -> rusqlite::Result<Connection> {
-    let conn = Connection::open("gestabox.db")?;
-    Ok(conn)
-}
