@@ -3,17 +3,27 @@ use rusqlite::Connection;
 pub fn create_bdd() -> rusqlite::Result<()> {
     let conn = Connection::open("gestabox.db")?;
 
-    conn.execute(
+    let result = conn.execute(
         "CREATE TABLE IF NOT EXISTS mission (
             id INTEGER PRIMARY KEY,
             title TEXT NOT NULL,
             done INTEGER NOT NULL
         )",
         [],
-    )?;
+    );
 
-    Ok(())
+    match result {
+        Ok(_) => {
+            println!("Création des tables OK !");
+            Ok(())
+        }
+        Err(e) => {
+            println!(" Erreur BD : {}", e);
+            Err(e)
+        }
+    }
 }
+
 
 pub fn get_connection() -> rusqlite::Result<Connection> {
     let conn = Connection::open("gestabox.db")?;
