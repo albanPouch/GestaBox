@@ -39,7 +39,7 @@ pub fn create(
 pub fn get_by_id(conn: &Connection, id_occupation: i32) -> Result<Occupation> {
     conn.query_row(
         "SELECT id_occupation, libelle_occupation
-         FROM Occupation WHERE id_status = ?1",
+         FROM Occupation WHERE id_occupation = ?1",
         params![id_occupation], 
         |row| {
             Ok(Occupation {

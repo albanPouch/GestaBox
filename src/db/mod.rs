@@ -15,6 +15,8 @@ mod intervenant;
 mod sous_traitant;
 mod activite;
 mod mission;
+mod occuper;
+mod typer;
 
 pub fn get_connection() -> rusqlite::Result<Connection> {
     let conn = Connection::open("gestabox.db")?;

@@ -50,8 +50,8 @@ pub fn create(
     code_postal : &str,
     telephone_intervant: &str,
     id_planning : i32,
-    id_employee: i32,
-    id_sous_traitant: i32,
+    id_employee: Option<i32>,
+    id_sous_traitant: Option<i32>,
 ) -> Result<()> {
     conn.execute(
         "INSERT INTO Intervenant (
