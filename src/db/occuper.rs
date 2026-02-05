@@ -18,8 +18,8 @@ pub fn init_table(conn: &Connection) -> Result<()> {
             id_planning INT,
             date_debut TEXT NOT NULL,
             date_fin TEXT NOT NULL,
-            FOREIGN KEY id_occupation REFERENCES Occupation(id_occupation),
-            FOREIGN KEY id_planning REFERENCES Planning (id_planning),
+            FOREIGN KEY (id_occupation) REFERENCES Occupation(id_occupation),
+            FOREIGN KEY (id_planning) REFERENCES Planning (id_planning),
             PRIMARY KEY(id_occupation,id_planning)
         )",
         [],

@@ -16,8 +16,8 @@ pub fn init_table(conn: &Connection) -> Result<()> {
             id_intervenant INT,
             id_competence INT,
             preference TEXT NOT NULL,
-            FOREIGN KEY id_intervenant REFERENCES Intervenant(id_intervenant),
-            FOREIGN KEY id_competence REFERENCES Competence (id_competence),
+            FOREIGN KEY (id_intervenant) REFERENCES Intervenant(id_intervenant),
+            FOREIGN KEY (id_competence) REFERENCES Competence (id_competence),
             PRIMARY KEY(id_intervenant,id_competence)
         )",
         [],

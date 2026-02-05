@@ -16,8 +16,8 @@ pub fn init_table(conn: &Connection) -> Result<()> {
             id_client INT,
             id_mission INT,
             date_demande TEXT NOT NULL,
-            FOREIGN KEY id_client REFERENCES Client(id_client),
-            FOREIGN KEY id_mission REFERENCES Mission (id_mission),
+            FOREIGN KEY (id_client) REFERENCES Client(id_client),
+            FOREIGN KEY (id_mission) REFERENCES Mission (id_mission),
             PRIMARY KEY(id_client,id_mission)
         )",
         [],
