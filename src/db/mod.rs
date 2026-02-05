@@ -36,5 +36,22 @@ pub fn init_gestabox_db() -> rusqlite::Result<()> {
     // On initialise les tables
     client::init_db(&conn)?;
     status::init_db(&conn)?;
+    activite::init_db(&conn)?;
+    mission::init_db(&conn)?;
+    employee::init_db(&conn)?;
+    type_mission::init_db(&conn)?;
+    competence::init_db(&conn)?;
+    intervenant::init_db(&conn)?;
+    sous_traitant::init_db(&conn)?;
+    occupation::init_db(&conn)?;
+    planning::init_db(&conn)?;
+    occuper::init_db(&conn)?;
+    typer::init_db(&conn)?;
+    posseder::init_db(&conn)?;
+    demander::init_db(&conn)?;
+    associer::init_db(&conn)?;
+    intervenir::init_db(&conn)?;
+    categorie_employe::init_db(&conn)?;
+    
     Ok(())
 }

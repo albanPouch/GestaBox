@@ -25,7 +25,7 @@ pub fn init_table(conn: &Connection) -> Result<()> {
             id_status INT,
             id_mission INT,
             FOREIGN KEY(id_status) REFERENCES Status(id_status),
-            FOREIGN KEY(id_mission) REFERENCES  Mission (id_mission),
+            FOREIGN KEY(id_mission) REFERENCES  Mission (id_mission)
             PRIMARY KEY(id_activite)
         )",
         [],
