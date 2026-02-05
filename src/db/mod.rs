@@ -29,8 +29,6 @@ pub fn get_connection() -> rusqlite::Result<Connection> {
 }
 
 pub fn init_gestabox_db() -> rusqlite::Result<()> {
-    // create_bdd()?;
-
     // On récupére la connexion
     let conn = get_connection()?;
 
