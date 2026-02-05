@@ -3,7 +3,7 @@ use rusqlite::Connection;
 // On déclare les modules
 pub mod db;
 pub mod seeds;
-mod client;
+pub mod client;
 mod status;
 mod occupation;
 mod planning;

@@ -7,7 +7,7 @@ pub struct Client {
     pub id_client: i32,
     pub nom_client: String,
     pub prenom_client: String,
-    pub raison_social: String,
+    pub raison_social: Option<String>,
     pub telephone_client: String,
 }
 
@@ -60,6 +60,25 @@ pub fn get_by_id(conn: &Connection, id_client: i32) -> Result<Client> {
             })
         },
     )
+}
+
+pub fn get_all(conn: &Connection) -> Result<Vec<Client>> {
+    let mut stmt = conn.prepare("SELECT id_client, nom_client, prenom_client, raison_social, telephone_client FROM Client")?;
+    let client_iter = stmt.query_map([], |row| {
+        Ok(Client {
+            id_client: row.get(0)?,
+            nom_client: row.get(1)?,
+            prenom_client: row.get(2)?,
+            raison_social: row.get(3)?,
+            telephone_client: row.get(4)?,
+        })
+    })?;
+
+    let mut clients = Vec::new();
+    for client in client_iter {
+        clients.push(client?);
+    }
+    Ok(clients)
 }
 
 // 5. On initialise la table et ajoute des données par défaut
