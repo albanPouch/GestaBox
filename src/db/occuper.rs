@@ -35,7 +35,7 @@ pub fn insert(
     date_fin: String
 ) -> Result<()> {
     conn.execute(
-        "INSERT INTO Occupation (
+        "INSERT INTO Occuper (
             id_occupation, id_planning, date_debut, date_fin
         ) VALUES (?1, ?2, ?3, ?4)",
         params![id_occupation, id_planning, date_debut, date_fin],

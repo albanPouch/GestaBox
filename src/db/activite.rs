@@ -25,7 +25,7 @@ pub fn init_table(conn: &Connection) -> Result<()> {
             id_status INT,
             id_mission INT,
             FOREIGN KEY(id_status) REFERENCES Status(id_status),
-            FOREIGN KEY(id_mission) REFERENCES  Mission (id_mission)
+            FOREIGN KEY(id_mission) REFERENCES  Mission (id_mission),
             PRIMARY KEY(id_activite)
         )",
         [],
@@ -46,7 +46,7 @@ pub fn insert(
     conn.execute(
         "INSERT INTO Activite (
             id_activite, libelle_activite, temps_tache_theorique, prioritaire, faisable_en_teletravail, id_status, id_mission
-        ) VALUES (?1, ?2, ?3, ?4, ?5, ?6)",
+        ) VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7)",
         params![id_activite, libelle_activite, temps_tache_theorique,
             prioritaire, faisable_en_teletravail, id_status, id_mission],
     )?;
