@@ -4,19 +4,19 @@ use crate::db::get_connection;
 
 // La Structure (Données)
 #[derive(Debug)]
-pub struct Sous_traitant {
+pub struct SousTraitant {
     pub id_sous_traitant: i32,
     pub nom_entreprise: String,
-    pub taux_horaire: c_float,
+    pub taux_journalier: c_float,
 }
 
 // Création de la table
 pub fn init_table(conn: &Connection) -> Result<()> {
     conn.execute(
-        "CREATE TABLE IF NOT EXISTS Sous_traitant(
+        "CREATE TABLE IF NOT EXISTS SousTraitant(
             id_sous_traitant INT,
             nom_entreprise VARCHAR(50),
-            taux_horaire float,
+            taux_journalier float,
             PRIMARY KEY(id_sous_traitant)
         )",
         [],
@@ -31,8 +31,8 @@ pub fn insert(
     taux_horaire: &c_float,
 ) -> Result<()> {
     conn.execute(
-        "INSERT INTO Sous_traitant (
-            id_sous_traitant, nom_entreprise, taux_horaire
+        "INSERT INTO SousTraitant (
+            id_sous_traitant, nom_entreprise, taux_journalier
         ) VALUES (?1, ?2, ?3)",
         params![id_sous_traitant, nom_entreprise, taux_horaire],
     )?;
@@ -40,16 +40,16 @@ pub fn insert(
 }
 
 // 4. Lecture
-pub fn get_by_id(conn: &Connection, id_sous_traitant: i32) -> Result<Sous_traitant> {
+pub fn get_by_id(conn: &Connection, id_sous_traitant: i32) -> Result<SousTraitant> {
     conn.query_row(
-        "SELECT id_sous_traitant, nom_entreprise, taux_horaire
-         FROM Sous_traitant WHERE id_sous_traitant = ?1",
+        "SELECT id_sous_traitant, nom_entreprise, taux_journalier
+         FROM SousTraitant WHERE id_sous_traitant = ?1",
         params![id_sous_traitant],
         |row| {
-            Ok(Sous_traitant {
+            Ok(SousTraitant {
                 id_sous_traitant: row.get(0)?,
                 nom_entreprise: row.get(1)?,
-                taux_horaire: row.get(2)?,
+                taux_journalier: row.get(2)?,
             })
         },
     )
