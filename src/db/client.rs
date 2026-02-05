@@ -27,7 +27,7 @@ pub fn init_table(conn: &Connection) -> Result<()> {
     Ok(())
 }
 
-pub fn create(
+pub fn insert(
     conn: &Connection,
     id: i32,
     nom_client: &str,
