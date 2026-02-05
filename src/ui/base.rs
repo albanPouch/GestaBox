@@ -21,6 +21,8 @@ impl GestaBoxApp {
             clients: Vec::new(),
         }
     }
+    
+    
     fn switch_view(&mut self, view: ActiveView, cx: &mut Context<Self>) {
         self.active_view = view;
         if let ActiveView::ClientList = self.active_view {

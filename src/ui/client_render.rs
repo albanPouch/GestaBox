@@ -9,6 +9,7 @@ pub fn load_data() -> Vec<Client> {
             return data;
         }
     }
+
     Vec::new()
 }
 
