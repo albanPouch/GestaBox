@@ -1,7 +1,7 @@
 use rusqlite::{Connection, Result, Error, ErrorCode};
 use crate::db::{activite, associer, categorie_employe, client, competence, demander, employee, intervenant, intervenir, mission, occupation, occuper, planning, posseder, sous_traitant, status, type_mission, typer};
 
-// Configuration flag to enable/disable seeding easily
+// configuration pour activiter/déactiviter facilement de seed
 pub const SEEDING_ENABLED: bool = true;
 
 fn try_insert(result: Result<()>) -> Result<()> {
@@ -81,6 +81,7 @@ fn seed_clients(conn: &Connection) -> Result<()> {
     // id, nom, prenom, raison_social, tel
     try_insert(client::insert(conn, 1, "Dupont", "Jean", Some("Dupont SA"), "0102030405"))?;
     try_insert(client::insert(conn, 2, "Durand", "Marie", None, "0607080910"))?;
+    try_insert(client::insert(conn, 3, "Bernard", "John", None, "0607080911"))?;
     Ok(())
 }
 
@@ -95,7 +96,8 @@ fn seed_status(conn: &Connection) -> Result<()> {
 fn seed_categorie_employe(conn: &Connection) -> Result<()> {
     // id, libelle, taux
     try_insert(categorie_employe::insert(conn, 1, "Junior", 150.0f32))?;
-    try_insert(categorie_employe::insert(conn, 2, "Senior", 300.0f32))?;
+    try_insert(categorie_employe::insert(conn, 2, "Senior", 400.0f32))?;
+    try_insert(categorie_employe::insert(conn, 3, "Expert", 350.0f32))?;
     Ok(())
 }
 
@@ -109,6 +111,7 @@ fn seed_occupation(conn: &Connection) -> Result<()> {
     // id, libelle
     try_insert(occupation::insert(conn, 1, "Réunion"))?;
     try_insert(occupation::insert(conn, 2, "Développement"))?;
+    try_insert(occupation::insert(conn, 3, "Archicteture"))?;
     Ok(())
 }
 
@@ -138,6 +141,7 @@ fn seed_employees(conn: &Connection) -> Result<()> {
     // id_employee, id_category
     try_insert(employee::insert(conn, 1, 1))?; // Junior
     try_insert(employee::insert(conn, 2, 2))?; // Senior
+    try_insert(employee::insert(conn, 3, 3))?; // Expert
     Ok(())
 }
 
