@@ -22,6 +22,7 @@ mod posseder;
 mod demander;
 mod associer;
 mod intervenir;
+mod trigger;
 
 pub fn get_connection() -> rusqlite::Result<Connection> {
     let conn = Connection::open("gestabox.db")?;

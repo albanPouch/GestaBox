@@ -1,4 +1,4 @@
-use rusqlite::{params, Connection, Result};
+use rusqlite::{params, AndThenRows, Connection, Result};
 use crate::db::get_connection;
 
 // La Structure (Données)
@@ -94,5 +94,51 @@ pub fn get_by_id(conn: &Connection, id_mission: i32) -> Result<Mission> {
 // 5. On initialise la table et ajoute des données par défaut
 pub fn init_db(conn: &Connection) -> Result<()> {
     init_table(&conn)?;
+    create_trigger(conn)?;
+    create_trigger_update(conn)?;
     Ok(())
 }
+
+pub fn create_trigger_update(conn: &Connection) -> Result<()> {
+    conn.execute(
+        "
+        CREATE TRIGGER IF NOT EXISTS check_dates_before_update
+        BEFORE UPDATE ON Mission
+        FOR EACH ROW
+        WHEN NEW.date_debut > NEW.date_fin
+        BEGIN
+            SELECT RAISE(
+                ABORT,
+                'Erreur : date_debut ne peut pas être supérieure à date_fin'
+            );
+        END;
+        ",
+        [],
+    )?;
+    Ok(())
+}
+
+
+
+pub fn create_trigger(conn: &Connection) -> Result<()> {
+    conn.execute(
+        "
+        CREATE TRIGGER IF NOT EXISTS check_dates_before_insert
+        BEFORE INSERT ON Mission
+        FOR EACH ROW
+        WHEN NEW.date_debut > NEW.date_fin
+        BEGIN
+            SELECT RAISE(
+                ABORT,
+                'Erreur : date_debut ne peut pas être supérieure à date_fin'
+            );
+        END;
+        ",
+        [],
+    )?;
+    Ok(())
+}
+
+
+
+
