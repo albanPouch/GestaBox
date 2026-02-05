@@ -33,7 +33,7 @@ pub fn init_table(conn: &Connection) -> Result<()> {
         id_status INT NOT NULL,
         id_intervenant INT NOT NULL,
         FOREIGN KEY(id_status) REFERENCES status(id_status),
-        FOREIGN KEY(id_intervenant) REFERENCES Intervenant(id_intervenant),
+        FOREIGN KEY(id_intervenant) REFERENCES Intervenant(id_intervant),
         PRIMARY KEY(id_mission)
         )",
         [],

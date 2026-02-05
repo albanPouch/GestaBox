@@ -30,7 +30,7 @@ pub fn insert(
 ) -> Result<()> {
     conn.execute(
         "INSERT INTO Demander (
-            id_occupation, id_competence
+            id_activite, id_competence
         ) VALUES (?1, ?2)",
         params![id_activite, id_competence],
     )?;

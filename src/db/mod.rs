@@ -3,6 +3,7 @@ pub use db:: create_bdd;
 
 // On déclare les modules
 pub mod db;
+pub mod seeds;
 mod client;
 mod status;
 mod occupation;
@@ -28,7 +29,7 @@ pub fn get_connection() -> rusqlite::Result<Connection> {
 }
 
 pub fn init_gestabox_db() -> rusqlite::Result<()> {
-    create_bdd()?;
+    // create_bdd()?;
 
     // On récupére la connexion
     let conn = get_connection()?;
@@ -52,6 +53,9 @@ pub fn init_gestabox_db() -> rusqlite::Result<()> {
     associer::init_db(&conn)?;
     intervenir::init_db(&conn)?;
     categorie_employe::init_db(&conn)?;
+    
+    // Seed data
+    seeds::seed_all(&conn)?;
     
     Ok(())
 }
