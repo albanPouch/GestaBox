@@ -14,7 +14,7 @@ pub fn init_table(conn: &Connection) -> Result<()> {
         "CREATE TABLE IF NOT EXISTS Employee(
             id_employee INT,
             id_category INT,
-            FOREIGN KEY(id_category)  REFERENCES CategorieEmploye (id_category),
+            FOREIGN KEY(id_category)  REFERENCES CategorieEmploye (id_categorie),
             PRIMARY KEY(id_employee)
         )",
         [],
@@ -30,7 +30,7 @@ pub fn insert(
 ) -> Result<()> {
     conn.execute(
         "INSERT INTO Employee (
-            id_client, id_category
+            id_employee, id_category
         ) VALUES (?1, ?2)",
         params![id_employee, id_category],
     )?;

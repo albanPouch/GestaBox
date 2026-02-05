@@ -16,7 +16,7 @@ pub fn init_table(conn: &Connection) -> Result<()> {
             id_intervenant INT,
             id_competence INT,
             preference TEXT NOT NULL,
-            FOREIGN KEY (id_intervenant) REFERENCES Intervenant(id_intervenant),
+            FOREIGN KEY (id_intervenant) REFERENCES Intervenant(id_intervant),
             FOREIGN KEY (id_competence) REFERENCES Competence (id_competence),
             PRIMARY KEY(id_intervenant,id_competence)
         )",
@@ -33,7 +33,7 @@ pub fn insert(
 ) -> Result<()> {
     conn.execute(
         "INSERT INTO Posseder (
-            id_occupation, id_competence, preference
+            id_intervenant, id_competence, preference
         ) VALUES (?1, ?2, ?3)",
         params![id_intervenant, id_competence, preference],
     )?;

@@ -1,4 +1,4 @@
-use rusqlite::{params, Connection, Result};
+use rusqlite::{params, AndThenRows, Connection, Result};
 use crate::db::get_connection;
 
 // La Structure (Données)
@@ -33,7 +33,7 @@ pub fn init_table(conn: &Connection) -> Result<()> {
         id_status INT NOT NULL,
         id_intervenant INT NOT NULL,
         FOREIGN KEY(id_status) REFERENCES status(id_status),
-        FOREIGN KEY(id_intervenant) REFERENCES Intervenant(id_intervenant),
+        FOREIGN KEY(id_intervenant) REFERENCES Intervenant(id_intervant),
         PRIMARY KEY(id_mission)
         )",
         [],
@@ -94,5 +94,111 @@ pub fn get_by_id(conn: &Connection, id_mission: i32) -> Result<Mission> {
 // 5. On initialise la table et ajoute des données par défaut
 pub fn init_db(conn: &Connection) -> Result<()> {
     init_table(&conn)?;
+    create_trigger(conn)?;
+    create_trigger_update(conn)?;
+    create_trigger_block_delete_by_status(conn)?;
+    create_trigger_del_mission(conn)?;
     Ok(())
 }
+
+pub fn create_trigger_update(conn: &Connection) -> Result<()> {
+    conn.execute(
+        "
+        CREATE TRIGGER IF NOT EXISTS check_dates_before_update
+        BEFORE UPDATE ON Mission
+        FOR EACH ROW
+        WHEN NEW.date_debut > NEW.date_fin
+        BEGIN
+            SELECT RAISE(
+                ABORT,
+                'Erreur : date_debut ne peut pas être supérieure à date_fin'
+            );
+        END;
+        ",
+        [],
+    )?;
+    Ok(())
+}
+
+pub fn create_trigger(conn: &Connection) -> Result<()> {
+    conn.execute(
+        "
+        CREATE TRIGGER IF NOT EXISTS check_dates_before_insert
+        BEFORE INSERT ON Mission
+        FOR EACH ROW
+        WHEN NEW.date_debut > NEW.date_fin
+        BEGIN
+            SELECT RAISE(
+                ABORT,
+                'Erreur : date_debut ne peut pas être supérieure à date_fin'
+            );
+        END;
+        ",
+        [],
+    )?;
+    Ok(())
+}
+
+// bloqué la suppression si en cours [ uniquement si annulé ou fini]
+pub fn create_trigger_block_delete_by_status(conn: &Connection) -> Result<()> {
+    conn.execute(
+        "
+        CREATE TRIGGER IF NOT EXISTS block_delete_mission_by_status
+        BEFORE DELETE ON Mission
+        FOR EACH ROW
+        WHEN OLD.id_status  NOT IN (2, 3)
+        BEGIN
+            SELECT RAISE(
+                ABORT,
+                'Suppression interdite : mission en cours'
+            );
+        END;
+        ",
+        [],
+    )?;
+    Ok(())
+}
+
+pub fn create_trigger_del_mission(conn: &Connection) -> Result<()> {
+    conn.execute(
+        "
+        CREATE TRIGGER IF NOT EXISTS historique_avant_del_mission
+        BEFORE delete ON Mission
+        FOR EACH ROW
+        WHEN
+        BEGIN
+        INSERT INTO Mission_historique (
+                id_mission,
+                temps_theorique,
+                description,
+                date_creation,
+                date_debut,
+                date_fin,
+                derniere_modif,
+                ville_mission,
+                departement_mission,
+                id_status,
+                id_intervenant,
+                date_suppression)
+            VALUES (
+                OLD.id_mission,
+                OLD.temps_theorique,
+                OLD.description,
+                OLD.date_creation,
+                OLD.date_debut,
+                OLD.date_fin,
+                OLD.derniere_modif,
+                OLD.ville_mission,
+                OLD.departement_mission,
+                OLD.id_status,
+                OLD.id_intervenant,
+                datetime('now')
+            );
+        END;
+        ",
+        [],
+    )?;
+    Ok(())
+}
+
+

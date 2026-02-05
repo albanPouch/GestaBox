@@ -18,7 +18,7 @@ pub fn init_table(conn: &Connection) -> Result<()> {
             id_activite INT,
             date_intervention TEXT NOT NULL,
             heure_intervention TEXT NOT NULL,
-            FOREIGN KEY (id_intervenant) REFERENCES Intervenant(id_intervenant),
+            FOREIGN KEY (id_intervenant) REFERENCES Intervenant(id_intervant),
             FOREIGN KEY (id_activite) REFERENCES Activite (id_activite),
             PRIMARY KEY(id_intervenant,id_activite)
         )",
