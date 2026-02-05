@@ -1,5 +1,4 @@
 use rusqlite::Connection;
-pub use db:: create_bdd;
 
 // On déclare les modules
 pub mod db;
