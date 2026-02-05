@@ -17,7 +17,7 @@ pub fn init_table(conn: &Connection) -> Result<()> {
             id_sous_traitant INT,
             nom_entreprise VARCHAR(50),
             taux_horaire float,
-            PRIMARY KEY(id_sous_traitant),
+            PRIMARY KEY(id_sous_traitant)
         )",
         [],
     )?;

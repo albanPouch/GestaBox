@@ -30,10 +30,10 @@ pub fn init_table(conn: &Connection) -> Result<()> {
             id_planning INT,
             id_employee INT,
             id_sous_traitant INT,
-            PRIMARY KEY(id_intervant),
             FOREIGN KEY(id_planning) REFERENCES Intervenant(id_planning),
             FOREIGN KEY(id_employee) REFERENCES  Employee (id_employee),
             FOREIGN KEY(id_sous_traitant) REFERENCES Sous_traintant (id_sous_traitant),
+            PRIMARY KEY(id_intervant)
         )",
         [],
     )?;

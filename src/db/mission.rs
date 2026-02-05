@@ -32,9 +32,9 @@ pub fn init_table(conn: &Connection) -> Result<()> {
         departement_mission VARCHAR(50),
         id_status INT NOT NULL,
         id_intervenant INT NOT NULL,
-        PRIMARY KEY(id_mission),
         FOREIGN KEY(id_status) REFERENCES status(id_status),
-        FOREIGN KEY(id_intervenant) REFERENCES Intervenant(id_intervenant)
+        FOREIGN KEY(id_intervenant) REFERENCES Intervenant(id_intervenant),
+        PRIMARY KEY(id_mission)
         )",
         [],
     )?;

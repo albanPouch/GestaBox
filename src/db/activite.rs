@@ -24,9 +24,9 @@ pub fn init_table(conn: &Connection) -> Result<()> {
             faisable_en_teletravail Boolean,
             id_status INT,
             id_mission INT,
-            PRIMARY KEY(id_activite),
             FOREIGN KEY(id_status) REFERENCES Status(id_status),
             FOREIGN KEY(id_mission) REFERENCES  Mission (id_mission),
+            PRIMARY KEY(id_activite)
         )",
         [],
     )?;
@@ -48,7 +48,7 @@ pub fn create(
             id_activite, libelle_activite, temps_tache_theorique, prioritaire, faisable_en_teletravail, id_status, id_mission
         ) VALUES (?1, ?2, ?3, ?4, ?5, ?6)",
         params![id_activite, libelle_activite, temps_tache_theorique,
-            prioritaire, faisable_en_teletravail, id_status ,id_mission],
+            prioritaire, faisable_en_teletravail, id_status, id_mission],
     )?;
     Ok(())
 }

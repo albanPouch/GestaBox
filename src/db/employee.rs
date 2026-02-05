@@ -14,8 +14,8 @@ pub fn init_table(conn: &Connection) -> Result<()> {
         "CREATE TABLE IF NOT EXISTS Employee(
             id_employee INT,
             id_category INT,
-            PRIMARY KEY(id_employee),
-            FORMING KEY(id_category)  REFERENCES CategorieEmploye (id_category)
+            FOREIGN KEY(id_category)  REFERENCES CategorieEmploye (id_category),
+            PRIMARY KEY(id_employee)
         )",
         [],
     )?;

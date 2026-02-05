@@ -14,8 +14,8 @@ pub fn init_table(conn: &Connection) -> Result<()> {
         "CREATE TABLE IF NOT EXISTS Demander(
             id_activite INT,
             id_competence INT,
-            FOREING KEY id_activite REFERENCES Activite (id_activite),
-            FOREING KEY id_competence REFERENCES Competence (id_competence),
+            FOREIGN KEY id_activite REFERENCES Activite (id_activite),
+            FOREIGN KEY id_competence REFERENCES Competence (id_competence),
             PRIMARY KEY(id_activite,id_competence)
         )",
         [],
