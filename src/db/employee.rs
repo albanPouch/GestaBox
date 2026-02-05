@@ -15,7 +15,7 @@ pub fn init_table(conn: &Connection) -> Result<()> {
             id_employee INT,
             id_category INT,
             PRIMARY KEY(id_employee),
-            FORMING KEY(id_category)  REFERENCES CategorieClient (id_category)
+            FORMING KEY(id_category)  REFERENCES CategorieEmploye (id_category)
         )",
         [],
     )?;

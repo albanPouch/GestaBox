@@ -4,7 +4,7 @@ use crate::db::get_connection;
 
 // La Structure (Données)
 #[derive(Debug)]
-pub struct CategorieClient {
+pub struct CategorieEmploye {
     pub id_categorie: i32,
     pub libelle_categorie: String,
     pub taux_horaire : c_float,
@@ -13,7 +13,7 @@ pub struct CategorieClient {
 // Création de la table
 pub fn init_table(conn: &Connection) -> Result<()> {
     conn.execute(
-        "CREATE TABLE IF NOT EXISTS CategorieClient(
+        "CREATE TABLE IF NOT EXISTS CategorieEmploye(
             id_categorie INT,
             libelle_categorie VARCHAR(50),
             taux_horaire c_float,
@@ -32,7 +32,7 @@ pub fn create(
 
 ) -> Result<()> {
     conn.execute(
-        "INSERT INTO CategorieClient (
+        "INSERT INTO CategorieEmploye (
             id_categorie, libelle_categorie, taux_horaire
         ) VALUES (?1, ?2, ?3)",
         params![id_categorie, libelle_categorie,taux_horaire],
@@ -42,13 +42,13 @@ pub fn create(
 
 
 // 4. Lecture
-pub fn get_by_id(conn: &Connection, id_categorie: i32) -> Result<CategorieClient> {
+pub fn get_by_id(conn: &Connection, id_categorie: i32) -> Result<CategorieEmploye> {
     conn.query_row(
         "SELECT id_categorie, libelle_categorie,taux_horaire
-         FROM CategorieClient WHERE id_categorie = ?1",
+         FROM CategorieEmploye WHERE id_categorie = ?1",
         params![id_categorie],
         |row| {
-            Ok(CategorieClient {
+            Ok(CategorieEmploye {
                 id_categorie: row.get(0)?,
                 libelle_categorie: row.get(1)?,
                 taux_horaire: row.get(2)?

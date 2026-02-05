@@ -7,7 +7,7 @@ mod client;
 mod status;
 mod occupation;
 mod planning;
-mod categorie_client;
+mod categorie_employe;
 mod employee;
 mod type_mission;
 mod competence;
