@@ -1,0 +1,57 @@
+use rusqlite::Connection;
+pub use db:: create_bdd;
+
+// On déclare les modules
+pub mod db;
+mod client;
+mod status;
+mod occupation;
+mod planning;
+mod categorie_employe;
+mod employee;
+mod type_mission;
+mod competence;
+mod intervenant;
+mod sous_traitant;
+mod activite;
+mod mission;
+mod occuper;
+mod typer;
+mod posseder;
+mod demander;
+mod associer;
+mod intervenir;
+
+pub fn get_connection() -> rusqlite::Result<Connection> {
+    let conn = Connection::open("gestabox.db")?;
+    Ok(conn)
+}
+
+pub fn init_gestabox_db() -> rusqlite::Result<()> {
+    create_bdd()?;
+
+    // On récupére la connexion
+    let conn = get_connection()?;
+
+    // On initialise les tables
+    client::init_db(&conn)?;
+    status::init_db(&conn)?;
+    activite::init_db(&conn)?;
+    mission::init_db(&conn)?;
+    employee::init_db(&conn)?;
+    type_mission::init_db(&conn)?;
+    competence::init_db(&conn)?;
+    intervenant::init_db(&conn)?;
+    sous_traitant::init_db(&conn)?;
+    occupation::init_db(&conn)?;
+    planning::init_db(&conn)?;
+    occuper::init_db(&conn)?;
+    typer::init_db(&conn)?;
+    posseder::init_db(&conn)?;
+    demander::init_db(&conn)?;
+    associer::init_db(&conn)?;
+    intervenir::init_db(&conn)?;
+    categorie_employe::init_db(&conn)?;
+    
+    Ok(())
+}
