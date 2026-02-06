@@ -3,18 +3,21 @@ use gpui::{
     WindowBounds, WindowOptions,
 };
 use crate::db::{client::Client, client, get_connection, mission::{self, Mission}};
+use crate::db::employee::Employee;
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 enum ActiveView {
     Home,
     ClientList,
     MissionList,
+    EmployeeList,
 }
 
 struct GestaBoxApp {
     active_view: ActiveView,
     clients: Vec<Client>,
     missions: Vec<Mission>,
+    employees: Vec<Employee>,
 }
 
 impl GestaBoxApp {
@@ -23,6 +26,7 @@ impl GestaBoxApp {
             active_view: ActiveView::Home,
             clients: Vec::new(),
             missions: Vec::new(),
+            employees: Vec::new(),
         }
     }
     
@@ -35,6 +39,9 @@ impl GestaBoxApp {
             }
             ActiveView::MissionList => {
                 self.missions = super::mission_render::load_data();
+            }
+            ActiveView::EmployeeList => {
+                self.employees = super::employee_render::load_data();
             }
             _ => {}
         }
@@ -58,7 +65,7 @@ impl GestaBoxApp {
                 self.render_dashboard_card("Missions", "Suivi des missions", 0x2196F3, ActiveView::MissionList, cx)
             )
             .child(
-                self.render_not_implemented_card("Employés", "Gestion RH", 0xFFC107)
+                self.render_dashboard_card("Employés", "Gestion RH", 0xFFC107, ActiveView::EmployeeList, cx)
             )
             .child(
                 self.render_not_implemented_card("Paramètres", "Configuration", 0x9E9E9E)
@@ -76,6 +83,14 @@ impl GestaBoxApp {
             this.switch_view(ActiveView::Home, cx);
         })
     }
+    
+    fn render_employee_list(&self, cx: &mut Context<Self>) -> impl IntoElement {
+        super::employee_render::render_list(&self.employees, cx, |this, cx| {
+            this.switch_view(ActiveView::Home, cx);
+        })
+    }
+
+
 
     fn render_dashboard_card(
         &self,
@@ -205,6 +220,7 @@ impl Render for GestaBoxApp {
                     ActiveView::Home => self.render_home(cx).into_any_element(),
                     ActiveView::ClientList => self.render_client_list(cx).into_any_element(),
                     ActiveView::MissionList => self.render_mission_list(cx).into_any_element(),
+                    ActiveView::EmployeeList => self.render_employee_list(cx).into_any_element(),
                 }
             )
     }
