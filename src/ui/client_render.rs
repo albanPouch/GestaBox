@@ -3,6 +3,10 @@ use gpui::{
 };
 use crate::db::{client, client::Client, get_connection};
 
+
+////////////////////////////////
+/// RÉCUPÉRATION DES DONNÉES ///
+////////////////////////////////
 pub fn load_data() -> Vec<Client> {
     if let Ok(conn) = get_connection() {
         if let Ok(data) = client::get_all(&conn) {
@@ -13,6 +17,9 @@ pub fn load_data() -> Vec<Client> {
     Vec::new()
 }
 
+/////////////////////////////////////////
+/// AFFICHAGE DES DONNÉES SUR LA PAGE ///
+/////////////////////////////////////////
 pub fn render_list<V: 'static>(
     clients: &[Client],
     cx: &mut Context<V>,
