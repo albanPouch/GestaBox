@@ -31,6 +31,9 @@ impl GestaBoxApp {
         cx.notify();
     }
 
+    /////////////////////
+    /// MENU HOME
+    /////////////////////
     fn render_home(&self, cx: &mut Context<Self>) -> impl IntoElement {
         div()
             .flex()
@@ -189,7 +192,9 @@ impl Render for GestaBoxApp {
     }
 }
 
-// Lancement du GUI
+/////////////////////
+/// DÉMARRAGE DU GUI
+/////////////////////
 pub(crate) fn run() {
     Application::new().run(|cx: &mut App| {
         let bounds = Bounds::centered(None, size(px(1280.0), px(720.0)), cx);
