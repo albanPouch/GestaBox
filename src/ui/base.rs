@@ -2,16 +2,19 @@ use gpui::{
     div, prelude::*, px, rgb, size, App, Application, Bounds, Context, MouseButton, Window,
     WindowBounds, WindowOptions,
 };
-use crate::db::{client::Client, client, get_connection};
+use crate::db::{client::Client, client, get_connection, mission::{self, Mission}};
 
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
 enum ActiveView {
     Home,
     ClientList,
+    MissionList,
 }
 
 struct GestaBoxApp {
     active_view: ActiveView,
     clients: Vec<Client>,
+    missions: Vec<Mission>,
 }
 
 impl GestaBoxApp {
@@ -19,14 +22,21 @@ impl GestaBoxApp {
         Self {
             active_view: ActiveView::Home,
             clients: Vec::new(),
+            missions: Vec::new(),
         }
     }
     
     
     fn switch_view(&mut self, view: ActiveView, cx: &mut Context<Self>) {
         self.active_view = view;
-        if let ActiveView::ClientList = self.active_view {
-            self.clients = super::client_render::load_data();
+        match self.active_view {
+            ActiveView::ClientList => {
+                self.clients = super::client_render::load_data();
+            }
+            ActiveView::MissionList => {
+                self.missions = super::mission_render::load_data();
+            }
+            _ => {}
         }
         cx.notify();
     }
@@ -42,10 +52,10 @@ impl GestaBoxApp {
             .p_8()
             .justify_center()
             .child(
-                self.render_dashboard_card("Clients", "Gérer vos clients", 0x4CAF50, cx)
+                self.render_dashboard_card("Clients", "Gérer vos clients", 0x4CAF50, ActiveView::ClientList, cx)
             )
             .child(
-                self.render_not_implemented_card("Missions", "Suivi des missions", 0x2196F3)
+                self.render_dashboard_card("Missions", "Suivi des missions", 0x2196F3, ActiveView::MissionList, cx)
             )
             .child(
                 self.render_not_implemented_card("Employés", "Gestion RH", 0xFFC107)
@@ -61,11 +71,18 @@ impl GestaBoxApp {
         })
     }
 
+    fn render_mission_list(&self, cx: &mut Context<Self>) -> impl IntoElement {
+        super::mission_render::render_list(&self.missions, cx, |this, cx| {
+            this.switch_view(ActiveView::Home, cx);
+        })
+    }
+
     fn render_dashboard_card(
         &self,
         title: &str,
         subtitle: &str,
         color_hex: u32,
+        target_view: ActiveView,
         cx: &mut Context<Self>,
     ) -> impl IntoElement {
         div()
@@ -80,8 +97,8 @@ impl GestaBoxApp {
             .shadow_md()
             .cursor_pointer()
             .hover(|s| s.bg(rgb(0x383838)))
-            .on_mouse_down(MouseButton::Left, cx.listener(|this, _, _, cx| {
-                this.switch_view(ActiveView::ClientList, cx);
+            .on_mouse_down(MouseButton::Left, cx.listener(move |this, _, _, cx| {
+                this.switch_view(target_view, cx); // The ActiveView enum doesn't implement Copy/Clone by default? We verify this.
             }))
             .child(
                 div()
@@ -187,6 +204,7 @@ impl Render for GestaBoxApp {
                 match self.active_view {
                     ActiveView::Home => self.render_home(cx).into_any_element(),
                     ActiveView::ClientList => self.render_client_list(cx).into_any_element(),
+                    ActiveView::MissionList => self.render_mission_list(cx).into_any_element(),
                 }
             )
     }

@@ -1,4 +1,5 @@
 use rusqlite::{params, AndThenRows, Connection, Result};
+use crate::db::client::Client;
 use crate::db::get_connection;
 
 // La Structure (Données)
@@ -65,6 +66,31 @@ pub fn insert(
         ],
     )?;
     Ok(())
+}
+
+pub fn get_all(conn: &Connection) -> Result<Vec<Mission>> {
+    let mut stmt = conn.prepare("SELECT id_mission, temps_theorique, description, date_creation, date_debut, date_fin, derniere_modif, ville_mission, departement_mission, id_status, id_intervenant FROM Mission")?;
+    let mission_iter = stmt.query_map([], |row| {
+        Ok(Mission {
+            id_mission: row.get(0)?,
+            temps_theorique: row.get(1)?,
+            description: row.get(2)?,
+            date_creation: row.get(3)?,
+            date_debut: row.get(4)?,
+            date_fin: row.get(5)?,
+            derniere_modif: row.get(6)?,
+            ville_mission: row.get(7)?,
+            departement_mission: row.get(8)?,
+            id_status: row.get(9)?,
+            id_intervenant: row.get(10)?,
+        })
+    })?;
+
+    let mut missions = Vec::new();
+    for mission in mission_iter {
+        missions.push(mission?);
+    }
+    Ok(missions)
 }
 
 // 4. Lecture
