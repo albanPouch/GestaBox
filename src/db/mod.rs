@@ -8,7 +8,7 @@ mod status;
 mod occupation;
 mod planning;
 mod categorie_employe;
-mod employee;
+pub(crate) mod employee;
 mod type_mission;
 mod competence;
 mod intervenant;
