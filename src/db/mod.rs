@@ -14,7 +14,7 @@ mod competence;
 mod intervenant;
 mod sous_traitant;
 mod activite;
-mod mission;
+pub(crate) mod mission;
 mod occuper;
 mod typer;
 mod posseder;
