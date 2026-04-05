@@ -1,9 +1,8 @@
 use rusqlite::{params, Connection, Result};
-use crate::db::get_connection;
 
 // La Structure (Données)
 #[derive(Debug)]
-pub struct type_mission {
+pub struct TypeMission {
     pub id_type_mission: i32,
     pub libelle_type_mission: String,
 }
@@ -37,13 +36,13 @@ pub fn insert(
 }
 
 // 4. Lecture
-pub fn get_by_id(conn: &Connection, id_type_mission: i32) -> Result<type_mission> {
+pub fn get_by_id(conn: &Connection, id_type_mission: i32) -> Result<TypeMission> {
     conn.query_row(
         "SELECT id_type_mission, libelle_type_mission
          FROM type_mission WHERE id_type_mission = ?1",
         params![id_type_mission],
         |row| {
-            Ok(type_mission {
+            Ok(TypeMission {
                 id_type_mission: row.get(0)?,
                 libelle_type_mission: row.get(1)?
             })

@@ -1,5 +1,4 @@
 use rusqlite::{params, Connection, Result};
-use crate::db::get_connection;
 
 // La Structure (Données)
 #[derive(Debug)]

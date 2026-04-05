@@ -1,0 +1,2 @@
+[build]
+rustflags = ["-Lnative=/home/vincent/RustroverProjects/GestaBox/local-libs"]

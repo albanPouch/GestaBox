@@ -3,7 +3,7 @@ use rusqlite::{params, Connection, Result};
 // =======================
 // Structure (Données)
 // =======================
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct Employee {
     pub id_employee: i32,
     pub id_category: i32,
@@ -36,6 +36,24 @@ pub fn insert(
         "INSERT INTO Employee (id_employee, id_category)
          VALUES (?1, ?2)",
         params![id_employee, id_category],
+    )?;
+    Ok(())
+}
+
+pub fn update(conn: &Connection, id_employee: i32, id_category: i32) -> Result<()> {
+    conn.execute(
+        "UPDATE Employee
+         SET id_category = ?2
+         WHERE id_employee = ?1",
+        params![id_employee, id_category],
+    )?;
+    Ok(())
+}
+
+pub fn delete(conn: &Connection, id_employee: i32) -> Result<()> {
+    conn.execute(
+        "DELETE FROM Employee WHERE id_employee = ?1",
+        params![id_employee],
     )?;
     Ok(())
 }
