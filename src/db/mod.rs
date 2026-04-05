@@ -1,3 +1,6 @@
+#![allow(dead_code)]
+#![allow(non_camel_case_types)]
+
 use rusqlite::Connection;
 
 // On déclare les modules

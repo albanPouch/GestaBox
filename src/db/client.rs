@@ -1,8 +1,7 @@
 use rusqlite::{params, Connection, Result};
-use crate::db::get_connection;
 
 // La Structure (Données)
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct Client {
     pub id_client: i32,
     pub nom_client: String,
@@ -41,6 +40,28 @@ pub fn insert(
         ) VALUES (?1, ?2, ?3, ?4, ?5)",
         params![id, nom_client, prenom_client, raison_social, telephone_client],
     )?;
+    Ok(())
+}
+
+pub fn update(
+    conn: &Connection,
+    id: i32,
+    nom_client: &str,
+    prenom_client: &str,
+    raison_social: Option<&str>,
+    telephone_client: &str,
+) -> Result<()> {
+    conn.execute(
+        "UPDATE Client
+         SET nom_client = ?2, prenom_client = ?3, raison_social = ?4, telephone_client = ?5
+         WHERE id_client = ?1",
+        params![id, nom_client, prenom_client, raison_social, telephone_client],
+    )?;
+    Ok(())
+}
+
+pub fn delete(conn: &Connection, id: i32) -> Result<()> {
+    conn.execute("DELETE FROM Client WHERE id_client = ?1", params![id])?;
     Ok(())
 }
 

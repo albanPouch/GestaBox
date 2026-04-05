@@ -1,3 +1,17 @@
-/target
-.idea
-gestabox.db
+/target/
+
+# Local SQLite databases
+/*.db
+/*.db-journal
+/*.db-shm
+/*.db-wal
+
+# IDE
+/.idea/
+
+# OS / editor noise
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+*~
