@@ -1,5 +1,7 @@
 use rusqlite::{params, Connection, Result};
 
+use super::mission_historique;
+
 // La Structure (Données)
 #[derive(Debug, Clone)]
 pub struct Mission {
@@ -262,10 +264,52 @@ pub fn get_by_id(conn: &Connection, id_mission: i32) -> Result<Mission> {
 // 5. On initialise la table et ajoute des données par défaut
 pub fn init_db(conn: &Connection) -> Result<()> {
     init_table(&conn)?;
+    mission_historique::init_table(conn)?;
     create_trigger(conn)?;
     create_trigger_update(conn)?;
     create_trigger_block_delete_by_status(conn)?;
     create_trigger_del_mission(conn)?;
+    Ok(())
+}
+
+fn create_trigger_del_mission(conn: &Connection) -> Result<()> {
+    conn.execute(
+        "
+        CREATE TRIGGER IF NOT EXISTS archive_deleted_mission
+        BEFORE DELETE ON Mission
+        FOR EACH ROW
+        BEGIN
+            INSERT INTO Mission_historique (
+                id_mission,
+                temps_theorique,
+                description,
+                date_creation,
+                date_debut,
+                date_fin,
+                derniere_modif,
+                ville_mission,
+                departement_mission,
+                id_status,
+                id_intervenant,
+                date_suppression
+            ) VALUES (
+                OLD.id_mission,
+                OLD.temps_theorique,
+                OLD.description,
+                OLD.date_creation,
+                OLD.date_debut,
+                OLD.date_fin,
+                OLD.derniere_modif,
+                OLD.ville_mission,
+                OLD.departement_mission,
+                OLD.id_status,
+                OLD.id_intervenant,
+                datetime('now')
+            );
+        END;
+        ",
+        [],
+    )?;
     Ok(())
 }
 
@@ -326,6 +370,3 @@ pub fn create_trigger_block_delete_by_status(conn: &Connection) -> Result<()> {
     )?;
     Ok(())
 }
-
-
-

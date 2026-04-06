@@ -1,5 +1,4 @@
-use rusqlite::{params, AndThenRows, Connection, Result};
-use crate::db::get_connection;
+use rusqlite::Connection;
 
 
 pub fn init_table(conn: &Connection) -> rusqlite::Result<()> {
@@ -22,5 +21,4 @@ pub fn init_table(conn: &Connection) -> rusqlite::Result<()> {
     )?;
     Ok(())
 }
-
 
