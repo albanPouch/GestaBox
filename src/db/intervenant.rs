@@ -86,6 +86,32 @@ pub fn get_by_id(conn: &Connection, id_intervant: i32) -> Result<Intervenant> {
     )
 }
 
+pub fn get_all(conn: &Connection) -> Result<Vec<Intervenant>> {
+    let mut stmt = conn.prepare(
+        "SELECT id_intervant, nom_intervenant, prenom_intervenant,
+                horaires, ville, code_postal, telephone_intervant,
+                id_planning,
+                COALESCE(id_employee, 0) as id_employee,
+                COALESCE(id_sous_traitant, 0) as id_sous_traitant
+         FROM Intervenant ORDER BY id_intervant",
+    )?;
+    let iter = stmt.query_map([], |row| {
+        Ok(Intervenant {
+            id_intervant: row.get(0)?,
+            nom_intervenant: row.get(1)?,
+            prenom_intervenant: row.get(2)?,
+            horaires: row.get(3)?,
+            ville: row.get(4)?,
+            code_postal: row.get(5)?,
+            telephone_intervant: row.get(6)?,
+            id_planning: row.get(7)?,
+            id_employee: row.get(8)?,
+            id_sous_traitant: row.get(9)?,
+        })
+    })?;
+    iter.collect()
+}
+
 // 5. On initialise la table et ajoute des données par défaut
 pub fn init_db(conn: &Connection) -> Result<()> {
     init_table(&conn)?;

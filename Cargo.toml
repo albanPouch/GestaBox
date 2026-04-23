@@ -5,4 +5,9 @@ edition = "2024"
 
 [dependencies]
 rusqlite = { version = "0.38.0", features = ["bundled"] }
+
+[target.'cfg(target_os = "windows")'.dependencies]
+gpui = { path = "vendor/gpui", default-features = false, features = ["windows-manifest"] }
+
+[target.'cfg(any(target_os = "linux", target_os = "freebsd"))'.dependencies]
 gpui = { path = "vendor/gpui", default-features = false, features = ["wayland"] }

@@ -1,2 +1,4 @@
 [build]
-rustflags = ["-Lnative=/home/vincent/RustroverProjects/GestaBox/local-libs"]
+
+[target.'cfg(any(target_os = "linux", target_os = "freebsd"))']
+rustflags = ["-Lnative=local-libs"]

@@ -2,6 +2,38 @@ use rusqlite::{params, Connection, Result};
 
 use super::mission_historique;
 
+#[derive(Debug, Clone)]
+pub struct CandidatIntervenant {
+    pub id_intervenant: i32,
+    pub nom: String,
+    pub prenom: String,
+    pub est_prestataire: bool,
+    pub id_sous_traitant: Option<i32>,
+    pub nb_competences_match: i32,
+    pub nb_competences_requises: i32,
+    pub niveau_moyen: f64,
+    pub preference_moyenne: f64,
+    pub disponible: bool,
+}
+
+#[derive(Debug, Clone)]
+pub struct MissionLigne {
+    pub id_mission: i32,
+    pub description: String,
+    pub date_debut: String,
+    pub date_fin: String,
+    pub id_status: i32,
+}
+
+#[derive(Debug, Clone)]
+pub struct EmploiDuTempsLigne {
+    pub id_intervenant: i32,
+    pub nom: String,
+    pub prenom: String,
+    pub est_prestataire: bool,
+    pub missions: Vec<MissionLigne>,
+}
+
 // La Structure (Données)
 #[derive(Debug, Clone)]
 pub struct Mission {
@@ -261,6 +293,150 @@ pub fn get_by_id(conn: &Connection, id_mission: i32) -> Result<Mission> {
         },
     )
 }
+pub fn assign_intervenant(conn: &Connection, id_mission: i32, id_intervenant: i32) -> Result<()> {
+    conn.execute(
+        "UPDATE Mission SET id_intervenant = ?2 WHERE id_mission = ?1",
+        params![id_mission, id_intervenant],
+    )?;
+    Ok(())
+}
+
+pub fn get_tous_candidats(
+    conn: &Connection,
+    id_mission: i32,
+) -> Result<Vec<CandidatIntervenant>> {
+    let mut stmt = conn.prepare(
+        "
+        WITH required_competences AS (
+            SELECT DISTINCT d.id_competence
+            FROM Activite a
+            INNER JOIN Demander d ON d.id_activite = a.id_activite
+            WHERE a.id_mission = ?1
+        ),
+        req_count AS (
+            SELECT COUNT(*) as n FROM required_competences
+        ),
+        intervenant_comp AS (
+            SELECT
+                i.id_intervant,
+                i.nom_intervenant,
+                i.prenom_intervenant,
+                i.id_planning,
+                i.id_sous_traitant,
+                CASE WHEN i.id_sous_traitant IS NOT NULL THEN 1 ELSE 0 END as est_prestataire,
+                COUNT(DISTINCT CASE WHEN rc.id_competence IS NOT NULL THEN p.id_competence ELSE NULL END) as nb_match,
+                COALESCE(AVG(CASE WHEN rc.id_competence IS NOT NULL THEN CAST(p.niveau AS REAL) ELSE NULL END), 0.0) as avg_niveau,
+                COALESCE(AVG(CASE WHEN rc.id_competence IS NOT NULL THEN CAST(p.preference AS REAL) ELSE NULL END), 0.0) as avg_pref
+            FROM Intervenant i
+            LEFT JOIN Posseder p ON p.id_intervenant = i.id_intervant
+            LEFT JOIN required_competences rc ON rc.id_competence = p.id_competence
+            GROUP BY i.id_intervant
+        )
+        SELECT
+            ic.id_intervant,
+            ic.nom_intervenant,
+            ic.prenom_intervenant,
+            ic.est_prestataire,
+            ic.id_sous_traitant,
+            ic.nb_match,
+            rc.n as nb_required,
+            ic.avg_niveau,
+            ic.avg_pref,
+            CASE WHEN
+                NOT EXISTS (
+                    SELECT 1 FROM Occuper o
+                    WHERE o.id_planning = ic.id_planning
+                    AND date(o.date_debut) <= date(m.date_fin)
+                    AND date(o.date_fin) >= date(m.date_debut)
+                )
+                AND NOT EXISTS (
+                    SELECT 1 FROM Mission m2
+                    WHERE m2.id_intervenant = ic.id_intervant
+                    AND m2.id_mission <> ?1
+                    AND date(m2.date_debut) <= date(m.date_fin)
+                    AND date(m2.date_fin) >= date(m.date_debut)
+                )
+            THEN 1 ELSE 0 END as disponible
+        FROM intervenant_comp ic
+        CROSS JOIN req_count rc
+        CROSS JOIN Mission m
+        WHERE m.id_mission = ?1
+        ORDER BY disponible DESC, ic.nb_match DESC, ic.avg_niveau DESC
+        ",
+    )?;
+
+    let iter = stmt.query_map(params![id_mission], |row| {
+        Ok(CandidatIntervenant {
+            id_intervenant: row.get(0)?,
+            nom: row.get(1)?,
+            prenom: row.get(2)?,
+            est_prestataire: row.get::<_, i32>(3)? != 0,
+            id_sous_traitant: row.get(4)?,
+            nb_competences_match: row.get(5)?,
+            nb_competences_requises: row.get(6)?,
+            niveau_moyen: row.get(7)?,
+            preference_moyenne: row.get(8)?,
+            disponible: row.get::<_, i32>(9)? != 0,
+        })
+    })?;
+    iter.collect()
+}
+
+pub fn get_emploi_du_temps(conn: &Connection) -> Result<Vec<EmploiDuTempsLigne>> {
+    let mut stmt = conn.prepare(
+        "
+        SELECT i.id_intervant, i.nom_intervenant, i.prenom_intervenant,
+               CASE WHEN i.id_sous_traitant IS NOT NULL THEN 1 ELSE 0 END as est_prestataire,
+               m.id_mission, m.description, m.date_debut, m.date_fin, m.id_status
+        FROM Intervenant i
+        LEFT JOIN Mission m ON m.id_intervenant = i.id_intervant
+        ORDER BY i.id_intervant, m.date_debut
+        ",
+    )?;
+
+    let mut map: std::collections::BTreeMap<i32, EmploiDuTempsLigne> =
+        std::collections::BTreeMap::new();
+
+    let rows = stmt.query_map([], |row| {
+        Ok((
+            row.get::<_, i32>(0)?,
+            row.get::<_, String>(1)?,
+            row.get::<_, String>(2)?,
+            row.get::<_, i32>(3)? != 0,
+            row.get::<_, Option<i32>>(4)?,
+            row.get::<_, Option<String>>(5)?,
+            row.get::<_, Option<String>>(6)?,
+            row.get::<_, Option<String>>(7)?,
+            row.get::<_, Option<i32>>(8)?,
+        ))
+    })?;
+
+    for row in rows {
+        let (id_int, nom, prenom, est_prestataire, id_mission, description, date_debut, date_fin, id_status) =
+            row?;
+        let entry = map.entry(id_int).or_insert(EmploiDuTempsLigne {
+            id_intervenant: id_int,
+            nom: nom.clone(),
+            prenom: prenom.clone(),
+            est_prestataire,
+            missions: Vec::new(),
+        });
+        if let (Some(id_m), Some(desc), Some(dd), Some(df), Some(st)) =
+            (id_mission, description, date_debut, date_fin, id_status)
+        {
+            entry.missions.push(MissionLigne {
+                id_mission: id_m,
+                description: desc,
+                date_debut: dd,
+                date_fin: df,
+                id_status: st,
+            });
+        }
+    }
+
+    Ok(map.into_values().collect())
+}
+
 // 5. On initialise la table et ajoute des données par défaut
 pub fn init_db(conn: &Connection) -> Result<()> {
     init_table(&conn)?;
